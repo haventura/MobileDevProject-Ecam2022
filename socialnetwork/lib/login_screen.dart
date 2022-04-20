@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:flutter_login/flutter_login.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'constants.dart';
 import 'custom_route.dart';
 import 'dashboard_screen.dart';
@@ -253,6 +253,10 @@ class LoginScreen extends StatelessWidget {
             debugPrint(
                 ' - ${element.term.id}: ${element.accepted == true ? 'accepted' : 'rejected'}');
           }
+        }
+        if(signupData.name != null && signupData.password != null){
+          FirebaseAuth.instance.createUserWithEmailAndPassword(
+            email: signupData.name!, password: signupData.password!);
         }
         return _signupUser(signupData);
       },

@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:flutter_login/flutter_login.dart';
@@ -6,71 +8,67 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'constants.dart';
 import 'custom_route.dart';
 import 'dashboard_screen.dart';
-import 'users.dart';
 
 class LoginScreen extends StatelessWidget {
   static const routeName = '/auth';
 
   const LoginScreen({Key? key}) : super(key: key);
 
-  Duration get loginTime => Duration(milliseconds: timeDilation.ceil() * 2250);
+  //Duration get loginTime => Duration(milliseconds: timeDilation.ceil() * 2250);
 
-  Future<String?> _loginUser(LoginData data) {
-    return Future.delayed(loginTime).then((_) {
-      if (!mockUsers.containsKey(data.name)) {
-        return 'User not exists';
-      }
-      if (mockUsers[data.name] != data.password) {
-        return 'Password does not match';
-      }
-      return null;
-    });
+  Future<String?> _loginUser(LoginData data) async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: data.name, password: data.password);
+    } on FirebaseAuthException catch (e) {
+      return e.code;
+    } catch (e) {
+      return e.toString();
+    }
+    return null;
   }
 
-  Future<String?> _signupUser(SignupData data) {
-    return Future.delayed(loginTime).then((_) {
-      return null;
-    });
+  Future<String?> _signupUser(SignupData data) async {
+    if (data.name != null && data.password != null) {
+      try {
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: data.name!,
+          password: data.password!,
+        );
+      } on FirebaseAuthException catch (e) {
+        return e.code;
+      } catch (e) {
+        return e.toString();
+      }
+    }
+    return null;
   }
 
-  Future<String?> _recoverPassword(String name) {
-    return Future.delayed(loginTime).then((_) {
-      if (!mockUsers.containsKey(name)) {
-        return 'User not exists';
-      }
-      return null;
-    });
+  Future<String?> _recoverPassword(String name) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: name);
+    } catch (e) {
+      return e.toString();
+    }
+    return null;
   }
 
   Future<String?> _signupConfirm(String error, LoginData data) {
-    return Future.delayed(loginTime).then((_) {
-      return null;
-    });
+    return _loginUser(data);
   }
 
   @override
   Widget build(BuildContext context) {
     return FlutterLogin(
       title: Constants.appName,
-      logo: const AssetImage('assets/images/ecorp.png'),
+      logo: const AssetImage('assets/images/flipper.jpg'),
       logoTag: Constants.logoTag,
       titleTag: Constants.titleTag,
       navigateBackAfterRecovery: true,
       onConfirmRecover: _signupConfirm,
       onConfirmSignup: _signupConfirm,
-      loginAfterSignUp: false,
+      loginAfterSignUp: true,
       loginProviders: [
-        LoginProvider(
-          button: Buttons.LinkedIn,
-          label: 'Sign in with LinkedIn',
-          callback: () async {
-            return null;
-          },
-          providerNeedsSignUpCallback: () {
-            // put here your logic to conditionally show the additional fields
-            return Future.value(true);
-          },
-        ),
         LoginProvider(
           icon: FontAwesomeIcons.google,
           label: 'Google',
@@ -78,47 +76,10 @@ class LoginScreen extends StatelessWidget {
             return null;
           },
         ),
-        LoginProvider(
-          icon: FontAwesomeIcons.githubAlt,
-          callback: () async {
-            debugPrint('start github sign in');
-            await Future.delayed(loginTime);
-            debugPrint('stop github sign in');
-            return null;
-          },
-        ),
       ],
-      termsOfService: [
-        TermOfService(
-            id: 'newsletter',
-            mandatory: false,
-            text: 'Newsletter subscription'),
-        TermOfService(
-            id: 'general-term',
-            mandatory: true,
-            text: 'Term of services',
-            linkUrl: 'https://github.com/NearHuscarl/flutter_login'),
-      ],
-      additionalSignupFields: [
-        const UserFormField(
-            keyName: 'Username', icon: Icon(FontAwesomeIcons.userAlt)),
-        const UserFormField(keyName: 'Name'),
-        const UserFormField(keyName: 'Surname'),
+      additionalSignupFields: const [
         UserFormField(
-          keyName: 'phone_number',
-          displayName: 'Phone Number',
-          userType: LoginUserType.phone,
-          fieldValidator: (value) {
-            var phoneRegExp = RegExp(
-                '^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]?\\d{3}[\\s.-]?\\d{4}\$');
-            if (value != null &&
-                value.length < 7 &&
-                !phoneRegExp.hasMatch(value)) {
-              return "This isn't a valid phone number";
-            }
-            return null;
-          },
-        ),
+            keyName: 'Username', icon: Icon(FontAwesomeIcons.userAlt)),
       ],
       initialAuthMode: AuthMode.login,
       // scrollable: true,
@@ -231,6 +192,9 @@ class LoginScreen extends StatelessWidget {
         if (value!.isEmpty) {
           return 'Password is empty';
         }
+        if (value.length < 6) {
+          return 'Password is too short';
+        }
         return null;
       },
       onLogin: (loginData) {
@@ -253,10 +217,6 @@ class LoginScreen extends StatelessWidget {
             debugPrint(
                 ' - ${element.term.id}: ${element.accepted == true ? 'accepted' : 'rejected'}');
           }
-        }
-        if(signupData.name != null && signupData.password != null){
-          FirebaseAuth.instance.createUserWithEmailAndPassword(
-            email: signupData.name!, password: signupData.password!);
         }
         return _signupUser(signupData);
       },

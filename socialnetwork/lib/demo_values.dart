@@ -1,5 +1,5 @@
 class DemoValues {
-  static final String userImage = "images/user.jpg";
+  static final String userImage = "../images/flipper.png";
   static final String postImage = "../images/flipper.png";
   static final String userName = "Shakleen Ishfar";
   static final String userEmail = "shakleenishfar@gmail.com";

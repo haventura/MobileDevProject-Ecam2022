@@ -1,5 +1,4 @@
 import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:flutter_login/flutter_login.dart';
@@ -12,15 +11,17 @@ import 'main_feed.dart';
     
 class LoginScreen extends StatelessWidget {
   static const routeName = '/auth';
-
-  const LoginScreen({Key? key}) : super(key: key);
+  String? newUsername;
+  LoginScreen({Key? key}) : super(key: key);
 
   //Duration get loginTime => Duration(milliseconds: timeDilation.ceil() * 2250);
 
   Future<String?> _loginUser(LoginData data) async {
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: data.name, password: data.password);
+          email: data.name, password: data.password).then((value) => 
+              newUsername != null?FirebaseAuth.instance.currentUser?.updateDisplayName(newUsername):false
+            );
     } on FirebaseAuthException catch (e) {
       return e.code;
     } catch (e) {
@@ -34,8 +35,8 @@ class LoginScreen extends StatelessWidget {
       try {
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: data.name!,
-          password: data.password!,
-        );
+          password: data.password!
+        ).then((value) => newUsername = data.additionalSignupData!["Username"]);
       } on FirebaseAuthException catch (e) {
         return e.code;
       } catch (e) {
@@ -67,6 +68,10 @@ class LoginScreen extends StatelessWidget {
       titleTag: Constants.titleTag,
       navigateBackAfterRecovery: true,
       loginAfterSignUp: true,
+      additionalSignupFields: const [
+      UserFormField(
+          keyName: 'Username', icon: Icon(FontAwesomeIcons.user))
+      ],
       initialAuthMode: AuthMode.login,
       userValidator: (value) {
         if (!value!.contains('@') || !value.endsWith('.com')) {
@@ -96,6 +101,9 @@ class LoginScreen extends StatelessWidget {
 
         signupData.additionalSignupData?.forEach((key, value) {
           debugPrint('$key: $value');
+          if(key == "Username"){
+
+          }
         });
         if (signupData.termsOfService.isNotEmpty) {
           debugPrint('Terms of service: ');
@@ -106,9 +114,10 @@ class LoginScreen extends StatelessWidget {
         }
         return _signupUser(signupData);
       },
+      
       onSubmitAnimationCompleted: () {
         Navigator.of(context).pushReplacement(FadePageRoute(
-          builder: (context) => const MainFeed(),
+          builder: (context) => MainFeed(),
         ));
       },
       onRecoverPassword: (name) {

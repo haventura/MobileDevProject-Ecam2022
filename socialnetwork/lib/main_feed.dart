@@ -4,61 +4,106 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_login/theme.dart';
 import 'package:flutter_login/widgets.dart';
+import 'header_bar.dart';
+import 'post_model.dart';
 import 'transition_route_observer.dart';
 import 'widgets/fade_in.dart';
 import 'constants.dart';
 import 'widgets/animated_numeric_text.dart';
 import 'widgets/round_button.dart';
 import 'post_card.dart';
+import 'dart:collection';
    
 class MainFeed extends StatelessWidget {
-  static const routeName = '/dashboard';
-
-  const MainFeed({Key? key}) : super(key: key);
-
+  static const routeName = '/mainfeed';
+  MainFeed({Key? key}) : super(key: key);
   
-    @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    Future<bool> _goToLogin(BuildContext context) {
-    return Navigator.of(context)
-        .pushReplacementNamed('/auth')
-        // we dont want to pop the screen, just replace it completely
-        .then((_) => false);
-    }
-    final menuBtn = IconButton(
-      icon: const Icon(FontAwesomeIcons.bars),
-      onPressed: () {},
-    );
-    final signOutBtn = IconButton(
-      icon: const Icon(FontAwesomeIcons.signOutAlt),
-      color: theme.colorScheme.secondary,
-      onPressed: () => _goToLogin(context),
-    );
+  static Future<List<Post>> _getData() async {
+    CollectionReference collection = FirebaseFirestore.instance.collection('posts');
+    QuerySnapshot eventsQuery = await collection.orderBy('date', descending: true).get();
+
+    HashMap<String, Post> eventsHashMap = new HashMap<String, Post>();
+
+    eventsQuery.docs.forEach((document) {
+      eventsHashMap.putIfAbsent(document['date'].toString(), () => Post(
+        username: document["username"],
+        email: document["email"],
+        title: document["title"],
+        content: document["content"],
+        image: document["image"],
+        time: document["date"]
+      ));
+    });
+
+  return eventsHashMap.values.toList();
+}
+  
+  /*
+  @override
+  Widget build(BuildContext context) {  
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Flipper"),
-        leading: FadeIn(
-          duration: Duration.zero,
-          offset: .3,
-          fadeDirection: FadeDirection.startToEnd,
-          child: menuBtn,
-        ),
-        actions: <Widget>[
-          FadeIn(
-            duration: Duration.zero,
-            offset: .3,
-            fadeDirection: FadeDirection.endToStart,
-            child: signOutBtn,
-          ),
-        ],
-      ),
+      appBar: HeaderBar.buildAppBar(context),
       body: ListView.builder(
-        itemCount: 5,
+        itemCount: 3,  
         itemBuilder: (BuildContext context, int index) {
           return PostCard();
         },
       ),
+    ); 
+  }
+  */
+    @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: HeaderBar.buildAppBar(context),
+      body: DefaultTextStyle(
+        style: Theme.of(context).textTheme.headline2!,
+        textAlign: TextAlign.center,
+        child: FutureBuilder<List<Post>>(
+          future: _getData(), // a previously-obtained Future<String> or null
+          builder: (BuildContext context, AsyncSnapshot<List<Post>> snapshot) {
+            List<Widget> children;
+            if (snapshot.hasData) {
+              children = <Widget>[
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: snapshot.data?.length,  
+                  itemBuilder: (BuildContext context, int index) {
+                    return PostCard(snapshot.data?[index]);
+                  })];
+            } else if (snapshot.hasError) {
+              children = <Widget>[
+                const Icon(
+                  Icons.error_outline,
+                  color: Colors.red,
+                  size: 60,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: Text('Error: ${snapshot.error}'),
+                )
+              ];
+            } else {
+              children = const <Widget>[
+                SizedBox(
+                  width: 60,
+                  height: 60,
+                  child: CircularProgressIndicator(),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 16),
+                  child: Text('Awaiting result...'),
+                )
+              ];
+            }
+            return Center(
+              child: ListView (
+                children: children,
+              ),
+            );
+          },
+        ),
+      )
     );
   }
 }

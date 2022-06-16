@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:socialnetwork/post_model.dart';
 import 'demo_values.dart';
 
 class PostCard extends StatelessWidget {
-  const PostCard({Key? key}) : super(key: key);
-
+  Post? data;
+  PostCard(this.data, {Key? key}) : super(key: key);
+  
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
@@ -15,9 +17,9 @@ class PostCard extends StatelessWidget {
           padding: const EdgeInsets.all(4.0),
           child: Column(
             children: <Widget>[
-              _Post(),
+              _Post(data),
               Divider(color: Colors.grey),
-              _PostDetails(),
+              _PostDetails(data),
             ],
           ),
         ),
@@ -27,26 +29,28 @@ class PostCard extends StatelessWidget {
 }
 
 class _Post extends StatelessWidget {
-  const _Post({Key? key}) : super(key: key);
+  Post? data;
+  _Post(this.data, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       flex: 3,
-      child: Row(children: <Widget>[_PostImage(), _PostTitleAndSummary()]),
+      child: Row(children: <Widget>[_PostImage(data), _PostTitleAndSummary(data)]),
     );
   }
 }
 
 class _PostTitleAndSummary extends StatelessWidget {
-  const _PostTitleAndSummary({Key? key}) : super(key: key);
+  Post? data;
+  _PostTitleAndSummary(this.data, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final TextStyle? titleTheme = Theme.of(context).textTheme.titleLarge;
     final TextStyle? summaryTheme = Theme.of(context).textTheme.bodyText1;
-    final String title = DemoValues.postTitle;
-    final String summary = DemoValues.postSummary;
+    final String title = data!.title;
+    final String summary = data!.content;
 
     return Expanded(
       flex: 3,
@@ -67,7 +71,8 @@ class _PostTitleAndSummary extends StatelessWidget {
 }
 
 class _PostImage extends StatelessWidget {
-  const _PostImage({Key? key}) : super(key: key);
+  Post? data;
+  _PostImage(this.data, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -76,22 +81,24 @@ class _PostImage extends StatelessWidget {
 }
 
 class _PostDetails extends StatelessWidget {
-  const _PostDetails({Key? key}) : super(key: key);
+  Post? data;
+  _PostDetails(this.data, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
         _UserImage(),
-        _UserNameAndEmail(),
-        _PostTimeStamp(),
+        _UserNameAndEmail(data),
+        _PostTimeStamp(data),
       ],
     );
   }
 }
 
 class _UserNameAndEmail extends StatelessWidget {
-  const _UserNameAndEmail({Key? key}) : super(key: key);
+  Post? data;
+  _UserNameAndEmail(this.data, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -106,9 +113,9 @@ class _UserNameAndEmail extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(DemoValues.userName, style: nameTheme),
+            Text(data!.username, style: nameTheme),
             SizedBox(height: 2.0),
-            Text(DemoValues.userEmail, style: emailTheme),
+            Text(data!.email, style: emailTheme),
           ],
         ),
       ),
@@ -131,14 +138,15 @@ class _UserImage extends StatelessWidget {
 }
 
 class _PostTimeStamp extends StatelessWidget {
-  const _PostTimeStamp({Key? key}) : super(key: key);
+  Post? data;
+  _PostTimeStamp(this.data, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final TextStyle? timeTheme = Theme.of(context).textTheme.bodyText1;
     return Expanded(
       flex: 2,
-      child: Text(DemoValues.postTime, style: timeTheme),
+      child: Text(data!.time.toDate().toString(), style: timeTheme),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:socialnetwork/main_feed.dart';
+import 'package:socialnetwork/new_post.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
@@ -71,9 +72,10 @@ class MyApp extends StatelessWidget {
       navigatorObservers: [TransitionRouteObserver()],
       initialRoute: MainFeed.routeName,
       routes: {
-        LoginScreen.routeName: (context) => const LoginScreen(),
+        LoginScreen.routeName: (context) => LoginScreen(),
         DashboardScreen.routeName: (context) => const DashboardScreen(),
-        MainFeed.routeName: (context) => const MainFeed(),
+        MainFeed.routeName: (context) => MainFeed(),
+        NewPost.routeName: (context) => const NewPost(),
       },
     );
   }

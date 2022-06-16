@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -26,7 +27,8 @@ class _DashboardScreenState extends State<DashboardScreen>
         // we dont want to pop the screen, just replace it completely
         .then((_) => false);
   }
-
+  
+  var db = FirebaseFirestore.instance;
   final routeObserver = TransitionRouteObserver<PageRoute?>();
   static const headerAniInterval = Interval(.1, .3, curve: Curves.easeOut);
   late Animation<double> _headerScaleAnimation;
@@ -85,7 +87,7 @@ class _DashboardScreenState extends State<DashboardScreen>
             child: Hero(
               tag: Constants.logoTag,
               child: Image.asset(
-                'assets/images/flipper.png',
+                'images/flipper.png',
                 filterQuality: FilterQuality.high,
                 height: 30,
               ),

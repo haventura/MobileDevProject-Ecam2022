@@ -26,32 +26,20 @@ class MainFeed extends StatelessWidget {
 
     eventsQuery.docs.forEach((document) {
       eventsHashMap.putIfAbsent(document['date'].toString(), () => Post(
+        uid: document["uid"],
         username: document["username"],
         email: document["email"],
         title: document["title"],
         content: document["content"],
         image: document["image"],
-        time: document["date"]
+        time: document["date"],
+        fileUrl: document["file_url"],
       ));
     });
 
   return eventsHashMap.values.toList();
 }
   
-  /*
-  @override
-  Widget build(BuildContext context) {  
-    return Scaffold(
-      appBar: HeaderBar.buildAppBar(context),
-      body: ListView.builder(
-        itemCount: 3,  
-        itemBuilder: (BuildContext context, int index) {
-          return PostCard();
-        },
-      ),
-    ); 
-  }
-  */
     @override
   Widget build(BuildContext context) {
     return Scaffold(

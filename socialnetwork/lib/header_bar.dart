@@ -28,6 +28,20 @@ class HeaderBar{
         .then((_) => false);
     }
 
+    Future<bool> _goToUsersList(BuildContext context) {
+      return Navigator.of(context)
+        .pushReplacementNamed('/userslist')
+        // we dont want to pop the screen, just replace it completely
+        .then((_) => false);
+    }
+
+    Future<bool> _goToUserSettings(BuildContext context) {
+      return Navigator.of(context)
+        .pushReplacementNamed('/usersettings')
+        // we dont want to pop the screen, just replace it completely
+        .then((_) => false);
+    }
+
     final menuBtn = PopupMenuButton(
       icon: const Icon(FontAwesomeIcons.bars),
       onSelected: (value) {
@@ -41,6 +55,7 @@ class HeaderBar{
             break;
 
           case 3:
+            _goToUsersList(context);
             break;
         }
       },
@@ -54,11 +69,50 @@ class HeaderBar{
           value: 2,
         ),
         const PopupMenuItem(
+          child: Text("Search user"),
+          value: 3,
+        ),
+      ]
+    );
+
+    final userBtn = PopupMenuButton(
+      icon: Image.asset(
+            'images/default-user-profile-picture.jpg',
+              fit: BoxFit.contain,
+              height: 32,
+          ),
+      onSelected: (value) {
+        switch (value){
+          case 1:
+            _goToUserSettings(context);        
+            break;
+
+          case 2:
+            _goToLogin(context);
+            break;
+
+          case 3:
+            break;
+        }
+      },
+      itemBuilder: (context) => [
+        const PopupMenuItem(
+          child: Text("User settings"),
+          value: 1,
+        ),
+        const PopupMenuItem(
+          child: Text("Sign out"),
+          value: 2,
+        ),
+        const PopupMenuItem(
           child: Text("Another option"),
           value: 3,
         ),
       ]
     );
+
+
+
     final signOutBtn = IconButton(
       icon: const Icon(FontAwesomeIcons.signOutAlt),
       color: theme.colorScheme.secondary,
@@ -66,7 +120,19 @@ class HeaderBar{
     );
 
     return AppBar(
-      title: Text("Flipper"),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(
+            'images/flipper.png',
+              fit: BoxFit.contain,
+              height: 32,
+          ),
+          Container(
+            padding: const EdgeInsets.all(8.0), child: Text('Flipper')
+          )
+        ],
+      ),
       leading: FadeIn(
         duration: Duration.zero,
         offset: .3,
@@ -78,7 +144,7 @@ class HeaderBar{
           duration: Duration.zero,
           offset: .3,
           fadeDirection: FadeDirection.endToStart,
-          child: signOutBtn,
+          child: userBtn,
         ),
       ],
     );

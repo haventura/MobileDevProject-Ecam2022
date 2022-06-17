@@ -9,6 +9,8 @@ import 'dashboard_screen.dart';
 import 'login_screen.dart';
 import 'transition_route_observer.dart';
 import 'main_feed.dart';
+import 'user_settings.dart';
+import 'users_list.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,14 +28,15 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-  static const String _title = 'Sample App';
+  static const String _title = 'Flipper';
  
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
 
     return MaterialApp(
-      title: 'Login Demo',
+      title: 'Flipper',
+      debugShowCheckedModeBanner :false,
       theme: ThemeData(
         textSelectionTheme:
             const TextSelectionThemeData(cursorColor: Colors.orange),
@@ -76,6 +79,8 @@ class MyApp extends StatelessWidget {
         DashboardScreen.routeName: (context) => const DashboardScreen(),
         MainFeed.routeName: (context) => MainFeed(),
         NewPost.routeName: (context) => const NewPost(),
+        UserSettings.routeName: (context) => const UserSettings(),
+        UsersList.routeName: (context) => const UsersList(),
       },
     );
   }

@@ -1,4 +1,5 @@
 import 'dart:html';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:flutter_login/flutter_login.dart';
@@ -18,9 +19,10 @@ class LoginScreen extends StatelessWidget {
 
   Future<String?> _loginUser(LoginData data) async {
     try {
+      print("2 $newUsername");
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: data.name, password: data.password).then((value) => 
-              newUsername != null?FirebaseAuth.instance.currentUser?.updateDisplayName(newUsername):false
+          email: data.name, password: data.password).then((value) async => 
+              newUsername != null? await FirebaseAuth.instance.currentUser?.updateDisplayName(newUsername):false
             );
     } on FirebaseAuthException catch (e) {
       return e.code;
@@ -37,6 +39,8 @@ class LoginScreen extends StatelessWidget {
           email: data.name!,
           password: data.password!
         ).then((value) => newUsername = data.additionalSignupData!["Username"]);
+        print("1 $newUsername");
+        return _loginUser(LoginData(name: data.name!, password: data.password!));
       } on FirebaseAuthException catch (e) {
         return e.code;
       } catch (e) {
@@ -114,12 +118,12 @@ class LoginScreen extends StatelessWidget {
         }
         return _signupUser(signupData);
       },
-      
       onSubmitAnimationCompleted: () {
         Navigator.of(context).pushReplacement(FadePageRoute(
           builder: (context) => MainFeed(),
         ));
       },
+      
       onRecoverPassword: (name) {
         debugPrint('Recover password info');
         debugPrint('Name: $name');

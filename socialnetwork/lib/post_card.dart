@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:socialnetwork/post_model.dart';
 import 'demo_values.dart';
+import 'package:intl/intl.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class PostCard extends StatelessWidget {
   Post? data;
@@ -76,7 +78,12 @@ class _PostImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(flex: 2, child: Image.asset(DemoValues.postImage));
+    if(data != null && data!.fileUrl != ""){
+      return Expanded(flex: 2, child: Image.network(data!.fileUrl));
+    }
+    else{
+      return Expanded(flex: 2, child: Image.asset(DemoValues.postImage));
+    }
   }
 }
 
@@ -139,14 +146,25 @@ class _UserImage extends StatelessWidget {
 
 class _PostTimeStamp extends StatelessWidget {
   Post? data;
+  final DateFormat formatter = DateFormat('yyyy-MM-dd');
   _PostTimeStamp(this.data, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final TextStyle? timeTheme = Theme.of(context).textTheme.bodyText1;
+    final duration = DateTime.now().difference(data!.time.toDate());
+    final timeAgo = DateTime.now().subtract(duration);
+    String formattedTime = timeago.format(timeAgo, locale: 'en_short');
+    if(formattedTime == "now"){
+      formattedTime = "Posted just now";
+    }
+    else{
+      formattedTime = "Posted $formattedTime ago";
+    }
+    String formattedDate = DateFormat('yyyy-MM-dd – kk:mm').format(data!.time.toDate());
     return Expanded(
       flex: 2,
-      child: Text(data!.time.toDate().toString(), style: timeTheme),
+      child: Text(formattedTime, style: timeTheme),
     );
   }
 }

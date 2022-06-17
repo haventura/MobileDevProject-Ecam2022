@@ -42,7 +42,7 @@ class MainFeed extends StatelessWidget {
 
   static Future<HashMap<String, Post>> _getDat(HashMap<String, Post> eventsHashMap, String uid) async {
     CollectionReference postsCollection = FirebaseFirestore.instance.collection('posts');
-    QuerySnapshot postsQuery = await postsCollection.where("uid", whereIn: [uid, FirebaseAuth.instance.currentUser!.uid]).get();
+    QuerySnapshot postsQuery = await postsCollection.where("uid", isEqualTo: uid).get();
     postsQuery.docs.forEach((document) {
       print(document.toString());
       eventsHashMap.putIfAbsent(document['date'].toString(), () => Post(

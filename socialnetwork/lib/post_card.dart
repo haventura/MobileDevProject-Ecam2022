@@ -82,7 +82,8 @@ class _PostImage extends StatelessWidget {
       return Expanded(flex: 2, child: Image.network(data!.fileUrl));
     }
     else{
-      return Expanded(flex: 2, child: Image.asset(DemoValues.postImage));
+      //return Expanded(flex: 2, child: Image.asset(DemoValues.postImage));
+      return SizedBox.shrink();
     }
   }
 }
@@ -97,7 +98,10 @@ class _PostDetails extends StatelessWidget {
       children: <Widget>[
         _UserImage(),
         _UserNameAndEmail(data),
+        
         _PostTimeStamp(data),
+        _PostLikesCount(data),
+        _PostLikeButton(data),
       ],
     );
   }
@@ -113,7 +117,7 @@ class _UserNameAndEmail extends StatelessWidget {
     final TextStyle? emailTheme = Theme.of(context).textTheme.bodyText1;
 
     return Expanded(
-      flex: 5,
+      flex: 4,
       child: Padding(
         padding: const EdgeInsets.all(4.0),
         child: Column(
@@ -140,6 +144,41 @@ class _UserImage extends StatelessWidget {
       child: CircleAvatar(
         backgroundImage: AssetImage(DemoValues.userImage),
       ),
+    );
+  }
+}
+
+class _PostLikesCount extends StatelessWidget {
+  Post? data;
+  _PostLikesCount(this.data, {Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final TextStyle? likeTheme = Theme.of(context).textTheme.bodyMedium;
+    
+    
+    return Expanded(
+      flex: 1,
+      child: Text("42", style: likeTheme, textAlign: TextAlign.right,),
+    );
+  }
+}
+
+class _PostLikeButton extends StatelessWidget {
+  Post? data;
+  _PostLikeButton(this.data, {Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final TextStyle? likeTheme = Theme.of(context).textTheme.bodyText1;
+    return Expanded(
+      flex: 1,
+      child: ElevatedButton(
+        onPressed: () async { 
+    
+        },
+        child: const Icon(Icons.thumb_up, color: Colors.white),
+        ),
     );
   }
 }

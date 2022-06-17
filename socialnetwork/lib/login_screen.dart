@@ -9,6 +9,7 @@ import 'constants.dart';
 import 'custom_route.dart';
 import 'dashboard_screen.dart';
 import 'main_feed.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
     
 class LoginScreen extends StatelessWidget {
   static const routeName = '/auth';
@@ -38,8 +39,20 @@ class LoginScreen extends StatelessWidget {
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: data.name!,
           password: data.password!
-        ).then((value) => newUsername = data.additionalSignupData!["Username"]);
+        ).then((value) {newUsername = data.additionalSignupData!["Username"];
+          final user = <String, dynamic>{
+            "uid": value.user?.uid,
+            "username": newUsername,
+            "email": value.user?.email,
+            "picture_url": "", 
+          };
+          FirebaseFirestore.instance.collection("users").doc(value.user?.uid).set(user);
+        }
+        );
         print("1 $newUsername");
+
+        
+
         return _loginUser(LoginData(name: data.name!, password: data.password!));
       } on FirebaseAuthException catch (e) {
         return e.code;

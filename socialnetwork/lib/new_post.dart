@@ -163,7 +163,8 @@ class NewPostState extends State<NewPost> {
   }
 
   Widget buildZone(BuildContext context) => Builder(
-    builder: (context) => DropzoneView(
+    builder: (context) => 
+      DropzoneView(
         operation: DragOperation.copy,
         cursor: CursorType.grab,
         onCreated: (DropzoneViewController ctrl) => imageController = ctrl,
@@ -177,6 +178,5 @@ class NewPostState extends State<NewPost> {
             changeText();
           },
         onLeave: () => print('Zone left'),
-    )
-  );
+    ),); 
 }

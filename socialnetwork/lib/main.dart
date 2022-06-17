@@ -73,14 +73,14 @@ class MyApp extends StatelessWidget {
             .copyWith(secondary: Colors.orange),
       ),
       navigatorObservers: [TransitionRouteObserver()],
-      initialRoute: MainFeed.routeName,
+      initialRoute: LoginScreen.routeName,
       routes: {
         LoginScreen.routeName: (context) => LoginScreen(),
         DashboardScreen.routeName: (context) => const DashboardScreen(),
         MainFeed.routeName: (context) => MainFeed(),
         NewPost.routeName: (context) => const NewPost(),
         UserSettings.routeName: (context) => const UserSettings(),
-        UsersList.routeName: (context) => const UsersList(),
+        UsersList.routeName: (context) => UsersList(),
       },
     );
   }

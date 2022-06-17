@@ -30,7 +30,7 @@ class HeaderBar{
 
     Future<bool> _goToUsersList(BuildContext context) {
       return Navigator.of(context)
-        .pushReplacementNamed('/userslist')
+        .pushReplacementNamed('/userslist', arguments : "")
         // we dont want to pop the screen, just replace it completely
         .then((_) => false);
     }
@@ -90,9 +90,6 @@ class HeaderBar{
           case 2:
             _goToLogin(context);
             break;
-
-          case 3:
-            break;
         }
       },
       itemBuilder: (context) => [
@@ -103,10 +100,6 @@ class HeaderBar{
         const PopupMenuItem(
           child: Text("Sign out"),
           value: 2,
-        ),
-        const PopupMenuItem(
-          child: Text("Another option"),
-          value: 3,
         ),
       ]
     );
